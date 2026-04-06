@@ -21,6 +21,7 @@ ALLOWED_HOSTS = [
 # ================= APPS =================
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -121,7 +122,7 @@ SIMPLE_JWT = {
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],   
+        'DIRS': [BASE_DIR / "templates"],   
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -132,6 +133,12 @@ TEMPLATES = [
         },
     },
 ]
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static"
+]
+
+
 
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
@@ -170,3 +177,24 @@ STATIC_URL = 'static/'
 # ================= DEFAULT ID =================
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Finance Admin",
+    "site_header": "Finance Backend",
+    "site_brand": "Finance",
+
+    "welcome_sign": "Welcome to Finance Dashboard",
+
+    "show_sidebar": True,
+    "navigation_expanded": True,
+
+    "theme": "darkly",
+
+    "icons": {
+        "users.user": "fas fa-user",
+        "records.record": "fas fa-database",
+    },
+
+    "custom_css": "css/admin.css",
+}

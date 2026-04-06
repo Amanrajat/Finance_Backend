@@ -11,6 +11,7 @@ from datetime import timedelta
 from apps.records.models import Record
 from apps.records.serializers import RecordSerializer
 from .throttles import DashboardThrottle
+from apps.dashboard.models import Summary
 
 
 class DashboardView(APIView):
@@ -52,9 +53,19 @@ class DashboardView(APIView):
                 records = records.filter(date__range=[start_date, end_date])
 
             # SUMMARY 
-            income = records.filter(type='income').aggregate(total=Sum('amount'))['total'] or 0
-            expense = records.filter(type='expense').aggregate(total=Sum('amount'))['total'] or 0
+            income = records.filter(type__iexact='income').aggregate(total=Sum('amount'))['total'] or 0
+            expense = records.filter(type__iexact='expense').aggregate(total=Sum('amount'))['total'] or 0
             balance = income - expense
+
+            # SAVE DATA INTO SUMMARY TABLE
+            Summary.objects.update_or_create(
+                user=user,
+                defaults={
+                    "total_income": income,
+                    "total_expense": expense,
+                    "balance": balance
+                }
+)
 
             # CATEGORY BREAKDOWN 
             category_data = list(
