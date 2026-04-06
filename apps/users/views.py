@@ -7,10 +7,15 @@ from rest_framework.permissions import IsAuthenticated , AllowAny
 from apps.users.permissions import IsAdmin
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .jwt import CustomTokenSerializer
+from rest_framework.throttling import ScopedRateThrottle
+from .throttles import LoginThrottle, RegisterThrottle
 
 
 class RegisterView(APIView):
     permission_classes = [AllowAny] 
+
+    throttle_classes = [RegisterThrottle]
+
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
 
@@ -63,3 +68,6 @@ class UpdateRoleView(APIView):
 class LoginView(TokenObtainPairView):
     permission_classes = [AllowAny] 
     serializer_class = CustomTokenSerializer
+
+    throttle_classes = [LoginThrottle]
+    

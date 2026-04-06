@@ -30,9 +30,13 @@ INSTALLED_APPS = [
 
     # Third-party
     'rest_framework',
+    'drf_yasg',
 
     # Finance Core Apps
     'apps.users',
+    'apps.records',
+    'apps.dashboard',
+    'apps.common',
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
@@ -79,9 +83,26 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
+    'DEFAULT_PAGINATION_CLASS': 'apps.common.pagination.CustomPagination',
+    'PAGE_SIZE': 20,
+
+        # Throttling
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+
+    'DEFAULT_THROTTLE_RATES': {
+
+        # Custom APIs
+        'login': '5/minute',
+        'register': '10/hour',
+        # Records
+        'records': '100/minute',         # GET (safe)
+        'records_write': '20/minute',    # POST/PUT/DELETE (strict)
+        'dashboard': '30/minute',
+    }
 }
+
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -92,8 +113,8 @@ AUTHENTICATION_BACKENDS = [
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=600),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
@@ -111,6 +132,18 @@ TEMPLATES = [
         },
     },
 ]
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': 'Enter: Bearer <your_token>'
+        }
+    }
+}
+
 
 # ================= PASSWORD VALIDATION =================
 
